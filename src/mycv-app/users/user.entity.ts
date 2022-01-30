@@ -15,9 +15,6 @@ export class UserEntity {
   id: number;
 
   @Column()
-  name: string;
-
-  @Column()
   email: string;
 
   @Column()

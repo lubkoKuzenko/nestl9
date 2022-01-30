@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto';
 import { UserEntity } from './user.entity';
 
 @Injectable()
@@ -28,13 +28,22 @@ export class UsersService {
     return await this.usersRepository.findOne(id);
   }
 
+  async findOneByEmail(email: string) {
+    const foundUser = await this.usersRepository.find({ email });
+
+    if (!foundUser) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return foundUser;
+  }
+
   async update(id: number, body: Partial<UserEntity>) {
     if (!id) {
       throw new NotFoundException('No Id Provided.');
     }
 
     const user = await this.usersRepository.findOne(id);
-    console.log(user);
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -44,12 +53,6 @@ export class UsersService {
   }
 
   async delete(id: number) {
-    // if (!id) {
-    //   throw new NotFoundException('User not found.');
-    // }
-
-    // return this.usersRepository.delete(id);
-
     const user = await this.usersRepository.findOne(id);
 
     if (!user) {

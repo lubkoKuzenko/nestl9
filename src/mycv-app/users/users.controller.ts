@@ -5,26 +5,23 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   NotFoundException,
-  UseInterceptors,
 } from '@nestjs/common';
-import { SerializeInterceptor } from '../common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Serialize } from '../common';
+import { UserDto, UpdateUserDto } from './dto';
 import { UsersService } from './users.service';
 
-@Controller('auth')
+@Controller('users')
+@Serialize(UserDto)
 export class UsersController {
   constructor(public usersService: UsersService) {}
 
-  @Post('signup')
-  createUser(@Body() body: CreateUserDto) {
-    return this.usersService.create(body);
+  @Get('/')
+  findAllUsers() {
+    return this.usersService.findAll();
   }
 
-  @UseInterceptors(SerializeInterceptor)
-  @Get('/users/:id')
+  @Get('/:id')
   async findUser(@Param('id') id: string) {
     const user = await this.usersService.findOne(Number(id));
 
@@ -34,17 +31,12 @@ export class UsersController {
     return user;
   }
 
-  @Get('/users')
-  findAllUsers() {
-    return this.usersService.findAll();
-  }
-
-  @Patch('users/:id')
+  @Patch('/:id')
   UpdateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.usersService.update(Number(id), body);
   }
 
-  @Delete('users/:id')
+  @Delete('/:id')
   DeleteUser(@Param('id') id: string) {
     return this.usersService.delete(Number(id));
   }
